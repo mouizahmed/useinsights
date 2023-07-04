@@ -13,12 +13,17 @@ import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
 import Tab from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
+import Switch from '@mui/joy/Switch';
+import Chip from '@mui/material/Chip';
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 
   const [inputPrompt, setInputPrompt] = useState('');
+  const [checked, setChecked] = useState(false);
+  const { data: session } = useSession();
 
   const handleSubmit = async (event: { preventDefault:() => void }) => {
 
@@ -32,42 +37,52 @@ export default function Home() {
   );
 
 
-
+  console.log(session);
   return (
     <div>
       
-      <Grid container spacing={2} columns = {{ xs: 1, md: 1, lg: 2, xl: 2 }} className="px-8 pt-4">
-        <Grid item xs={1} md={1} lg={1} xl={1} className="px-8 space-y-4">
+      <Grid container spacing={2} columns = {{ xs: 1, md: 1, lg: 2, xl: 2 }} className="pt-4 px-4">
+        <Grid item xs={1} md={1} lg={1} xl={1} className="space-y-4 px-4">
 
-        <Tabs defaultValue={0}>
-      <TabList>
-        <Tab value={0}>Prompt to Chart</Tab>
-        <Tab value={1} disabled>Table to Chart</Tab>
-        <Tab value={2} disabled>Chart to Table</Tab>
-      </TabList>
-      <TabPanel value={0} sx={{ p: 2 }}>
-      <form id="chart-generation" onSubmit={handleSubmit} className="space-y-4">
-          <SectionHeader stepNumber={1} headerTitle={"Enter a prompt to visualize your data"}/>
-            <Textarea minRows={5} maxRows={5} placeholder="Type anything…" value={inputPrompt} required autoFocus onChange={handleInputChange} />
-            <Divider />
-            <SectionHeader stepNumber={2} headerTitle={"Upload custom data sources (Optional)"}/>
-            <Divider />
-            <SectionHeader stepNumber={3} headerTitle={"Customize your Chart"}/>
-      </form>
-      </TabPanel>
-      <TabPanel value={1} sx={{ p: 2 }}>
-        <b>Coming Soon!</b>
-      </TabPanel>
-      <TabPanel value={2} sx={{ p: 2 }}>
-        <b>Coming Soon!</b>
-      </TabPanel>
-    </Tabs>
-        </Grid>
-        <Grid item xs={1} md={1} lg={1} xl={1}>
-          <div className="pattern-cross pattern-blue-500 pattern-bg-white pattern-size-6 pattern-opacity-20 w-full h-full ">Test
-          </div>
-        </Grid>
-
+          <Tabs size="md" defaultValue={0}>
+          <TabList>
+            <Tab value={0}>Prompt</Tab>
+            <Tab value={1} disabled>Table</Tab>
+            <Tab value={2} disabled>Image</Tab>
+          </TabList>
+          <TabPanel value={0} sx={{ p: 2 }} className="">
+            <form id="chart-generation" onSubmit={handleSubmit} className="space-y-4">
+              <SectionHeader stepNumber={1} headerTitle={"Enter a prompt to visualize your data"}/>
+              <Textarea minRows={5} maxRows={5} placeholder="Type anything…" value={inputPrompt} required autoFocus onChange={handleInputChange} />
+              <Divider />
+              <Grid container columns={3}>
+                <Grid item xs={2}>
+                  <SectionHeader stepNumber={2} headerTitle={"Upload custom data sources (Optional)"}/>
+                </Grid>
+                <Grid item xs={1} className="flex items-end justify-end">
+                  <Switch
+                    checked={checked}
+                    onChange={(event) => setChecked(event.target.checked)}
+                  />
+                </Grid>
+              </Grid>
+              <Divider />
+              <SectionHeader stepNumber={3} headerTitle={"Customize your Chart"}/>
+            </form>
+            <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full absolute bottom-0 right-0">
+              Generate
+            </button>
+          </TabPanel>
+          <TabPanel value={1} sx={{ p: 2 }}>
+            <b>Coming Soon!</b>
+          </TabPanel>
+          <TabPanel value={2} sx={{ p: 2 }}>
+            <b>Coming Soon!</b>
+          </TabPanel>
+        </Tabs>
+      </Grid>
+      <Grid item xs={1} md={1} lg={1} xl={1} className="bg-zinc-100 rounded-xl"> 
+      </Grid>
       </Grid>
 
 

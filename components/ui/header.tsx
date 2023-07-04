@@ -1,4 +1,5 @@
 import react from 'react';
+import {SignIn} from '../SignIn';
 
 export const Header = () => {
     return (
@@ -6,6 +7,7 @@ export const Header = () => {
          <h1 className="font-inter font-bold sm:text-xl flex items-center">
           Plotify
          </h1>
+         <SignIn />
         </nav>
     );
 }
