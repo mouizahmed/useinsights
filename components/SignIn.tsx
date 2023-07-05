@@ -46,20 +46,20 @@ export const SignIn = () => {
     if (session) {
         return (
             <>
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={2} className="flex justify-center items-center">
 
-            <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
+            <Paper elevation={2} sx={{ borderRadius: '20px', background: 'white', }} className=" h-7 flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
                 {`Free`} Tier
             </Paper>
 
-            <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
-                {3} Available Credits
+            <Paper elevation={2} sx={{ borderRadius: '20px' }}  className=" h-7 flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
+                {3} Credits
             </Paper>
 
             <Tooltip title="Account settings">
             <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300" onClick={handleClick}>
             <Avatar alt={session.user?.name as string} src={session.user?.image as string} sx={{ width: 24, height: 24 }} />
-            <h1>{session.user?.email}</h1>
+            {/* <h1>{session.user?.email}</h1> */}
             </Paper>
             </Tooltip>
 
@@ -108,12 +108,24 @@ export const SignIn = () => {
     } else {
         return (
             <>
-            <Tooltip title="Sign in with Google">
-            <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300" onClick={handleSignIn}>
-            <AccountCircleIcon fontSize="small" />
-            <h1>Sign in with Google</h1>
-            </Paper>
-            </Tooltip>
+            <Stack direction="row" spacing={2}>
+
+                <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
+                    {`Guest`} Tier
+                </Paper>
+
+                {/* KEEP TRACK OF UNLOGGED IN USER CREDITS WITH COOKIES */}
+                <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
+                    {3} Available Credits
+                </Paper>
+
+                <Tooltip title="Sign in with Google">
+                <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300" onClick={handleSignIn}>
+                <AccountCircleIcon fontSize="small" />
+                <h1>Sign in with Google</h1>
+                </Paper>
+                </Tooltip>
+            </Stack>
             </>
         )
     }
