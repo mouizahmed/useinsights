@@ -1,135 +1,147 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, Fragment } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
-import Avatar from '@mui/joy/Avatar';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Box from '@mui/material/Box';
-import Logout from '@mui/icons-material/Logout';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Stack from '@mui/material/Stack';
-
+import Avatar from "@mui/joy/Avatar";
+import { Menu, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { PlusCircleIcon } from "@heroicons/react/24/outline"; 
 
 export const SignIn = () => {
-    const { data: session } = useSession();
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
+  const { data: session } = useSession();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
+  async function handleSignIn() {
+    signIn("google");
+  }
 
-    async function handleSignIn() {
-        signIn('google');
-    }
+  async function handleSignOut() {
+    signOut();
+  }
 
-    async function handleSignOut() {
-        signOut();
-    }
+  function handleClick(event: any) {
+    console.log("hello");
+    setAnchorEl(event.currentTarget);
+  }
 
-    function handleClick(event: any) {
-        console.log("hello");
-        setAnchorEl(event.currentTarget);
-    }
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-    const handleClose = () => {
-        setAnchorEl(null);
-      };
-    
-    if (session) {
-        return (
-            <>
-            <Stack direction="row" spacing={2} className="flex justify-center items-center">
+  function classNames(...classes: string[]) {
+    return classes.filter(Boolean).join(" ");
+  }
 
-            <Paper elevation={2} sx={{ borderRadius: '20px', background: 'white', }} className=" h-7 flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
-                {`Free`} Tier
-            </Paper>
+  if (session) {
+    return (
+      <>
+        <div>
+          <Menu as="div" className="relative inline-block text-left">
+            <div>
+              <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 ">
+              <Avatar alt={session.user?.name as string} src={session.user?.image as string} sx={{ width: 24, height: 24 }} />
+                <ChevronDownIcon
+                  className="-mr-1 ml-2 h-5 w-5"
+                  aria-hidden="true"
+                />
+                
+              </Menu.Button>
+            </div>
 
-            <Paper elevation={2} sx={{ borderRadius: '20px' }}  className=" h-7 flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
-                {3} Credits
-            </Paper>
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <Menu.Items className="z-10 origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
+              <div className="py-1">
+                  <Menu.Item disabled>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "block px-4 py-2 text-sm cursor-default"
+                        )}
+                      >
+                       Signed in as {session.user?.name}
+                      </a>
+                    )}
+                  </Menu.Item>
+                </div>
+                <div className="py-1">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900 inline-flex items-center w-full"
+                            : "text-gray-700",
+                          "px-4 py-2 text-sm inline-flex items-center w-full"
+                        )}
+                      >
+                         {/* <PlusCircleIcon className="h-5 w-5 mr-1" /> */}
+                         Buy more Credits
+                      </a>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "block px-4 py-2 text-sm"
+                        )}
+                      >
+                        Upgrade Plan
+                      </a>
+                    )}
+                  </Menu.Item>
+                </div>
+                <div className="py-1">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <a
+                        onClick={handleSignOut}
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "block px-4 py-2 text-sm cursor-pointer"
+                        )}
+                      >
+                        Signout
+                      </a>
+                    )}
+                  </Menu.Item>
+                </div>
+              </Menu.Items>
+            </Transition>
+          </Menu>
+        </div>
 
-            <Tooltip title="Account settings">
-            <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300" onClick={handleClick}>
-            <Avatar alt={session.user?.name as string} src={session.user?.image as string} sx={{ width: 24, height: 24 }} />
-            {/* <h1>{session.user?.email}</h1> */}
-            </Paper>
-            </Tooltip>
-
-            
-
-            </Stack>
-
+      </>
+    );
+  } else {
+    return (
+      <>
+      
+              <div>
+                <button className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" onClick={handleSignIn}>
+                  Sign In with Google
+                </button>
+                </div>
         
-      <Menu
-        anchorEl={anchorEl}
-        id="account-menu"
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        disableAutoFocusItem
-      >
-        <MenuItem onClick={handleClose} sx={{ pointerEvents: 'none' }}>
-            <b>Signed in as {session.user?.name}</b>
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <CreditCardIcon fontSize="small" />
-          </ListItemIcon>
-          Buy More Credits
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <ChangeHistoryIcon fontSize="small" />
-          </ListItemIcon>
-          Upgrade Plan
-        </MenuItem>
-        <MenuItem onClick={handleSignOut}>
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Signout
-        </MenuItem>
-      </Menu>
-            
-            
-            </>
-        )
-    } else {
-        return (
-            <>
-            <Stack direction="row" spacing={2}>
-
-                <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
-                    {`Guest`} Tier
-                </Paper>
-
-                {/* KEEP TRACK OF UNLOGGED IN USER CREDITS WITH COOKIES */}
-                <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300">
-                    {3} Available Credits
-                </Paper>
-
-                <Tooltip title="Sign in with Google">
-                <Paper elevation={2} className="flex justify-center items-center px-2 py-1 space-x-2 hover:bg-zinc-200 hover:cursor-pointer duration-300" onClick={handleSignIn}>
-                <AccountCircleIcon fontSize="small" />
-                <h1>Sign in with Google</h1>
-                </Paper>
-                </Tooltip>
-            </Stack>
-            </>
-        )
-    }
-    
-
-}
-
+      </>
+    );
+  }
+};
