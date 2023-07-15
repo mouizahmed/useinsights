@@ -8,7 +8,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
     return (
         <>
             <Head>
-                <title>Plotify | Visualize your data</title>
+                <title>Insightify</title>
             </Head>
             <Header />
             <main>
