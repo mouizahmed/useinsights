@@ -6,13 +6,13 @@ import React, { useState, useEffect } from "react";
 
 export const Header = () => {
   const router = useRouter();
-
   useEffect(() => {
     const cookies = parse(document.cookie);
-    if (!cookies.available_credits) {
-        document.cookie = `chart_generations=3;path=/;max-age=${60*60*24*7};samesite=lax`;
-    }
-    
+    console.log(cookies);
+    // if (!cookies.available_credits) {
+    //     document.cookie = `chart_generations=3;path=/;max-age=${60*60*24*7};samesite=lax`;
+    // }
+    // console.log(cookies);
   }, []);
 
   const handleClick = (e: { preventDefault: () => void }) => {
@@ -25,7 +25,7 @@ export const Header = () => {
       <div
         className="flex items-center space-x-2 cursor-pointer"
         onClick={handleClick}
-      >
+      > 
         <div className="border rounded-md p-1 hover:bg-slate-50">
           <EyeIcon className="w-5 h-5" />
         </div>

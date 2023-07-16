@@ -69,13 +69,14 @@ export default function TablePrompt () {
                 onSubmit={handleSubmit}
                 className="h-tabs grid grid-rows-3 grid-flow-row gap-4"
               >
-                <div className="row-span-3 space-y-4">
+                <div className="row-span-3 space-y-4 p-1 overflow-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-rounded-lg scrollbar-track-gray-300">
                   <Disclosure defaultOpen={true}>
                     {({ open }) => (
                       <>
                         <Disclosure.Button className="flex w-full justify-between rounded-lg bg-gray-100 px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-gray-500 focus-visible:ring-opacity-75">
                           <SectionHeader
                             stepNumber={1}
+                            color={"blue"}
                             headerTitle={
                               "Enter a prompt to visualize your data"
                             }
@@ -167,6 +168,7 @@ export default function TablePrompt () {
                         <Disclosure.Button className="flex w-full justify-between rounded-lg bg-gray-100 px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-gray-500 focus-visible:ring-opacity-75">
                           <SectionHeader
                             stepNumber={2}
+                            color={"blue"}
                             headerTitle={
                               "Upload custom data sources (Optional)"
                             }
@@ -202,6 +204,7 @@ export default function TablePrompt () {
                         <Disclosure.Button className="flex w-full justify-between rounded-lg bg-gray-100 px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-gray-500 focus-visible:ring-opacity-75">
                           <SectionHeader
                             stepNumber={3}
+                            color={"blue"}
                             headerTitle={"Customize your chart"}
                           />
                           <ChevronUpIcon
@@ -223,6 +226,7 @@ export default function TablePrompt () {
                         <Disclosure.Button className="flex w-full justify-between rounded-lg bg-gray-100 px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-gray-500 focus-visible:ring-opacity-75">
                           <SectionHeader
                             stepNumber={4}
+                            color={"blue"}
                             headerTitle={"Additional Options"}
                           />
                           <ChevronUpIcon

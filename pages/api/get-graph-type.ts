@@ -10,16 +10,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log(req.body);
         console.log(userPrompt);
         
-        const cookies = cookie.parse(req.headers.cookie || '');
-        console.log(cookies);
-        res.setHeader(
-            'Set-Cookie',
-            cookie.serialize('available_credits', "3", {
-              path: '/',
-              maxAge: 60 * 60 * 24 * 7, // 1 week
-              sameSite: 'lax',
-            })
-          );
+        // const cookies = cookie.parse(req.headers.cookie || '');
+        // console.log(cookies);
+        // res.setHeader(
+        //     'Set-Cookie',
+        //     cookie.serialize('available_credits', "3", {
+        //       path: '/',
+        //       maxAge: 60 * 60 * 24 * 7, // 1 week
+        //       sameSite: 'lax',
+        //     })
+        //   );
         const model = new OpenAI({ openAIApiKey: process.env.OPENAI_API_KEY, temperature: 0.9 });
         // 'show me a line chart of COVID-19 cases in london in march 2020'
     const response = await model.call(
