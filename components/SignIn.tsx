@@ -4,28 +4,36 @@ import Avatar from "@mui/joy/Avatar";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { getUserCredits } from "../util/helper"
 import { parse, serialize } from "cookie";
+import axios from "axios";
 
 export const SignIn = () => {
   const { data: session } = useSession();
-  const data = useSession();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [cookieCredits, setCookieCredits] = useState("");
+  // const [cookieCredits, setCookieCredits] = useState("");
   const open = Boolean(anchorEl);
   //const cookies = parse(document.cookie);
   //console.log(document.cookie);
 
-  useEffect(() => {
-    const cookies = parse(document.cookie);
-
-    if (!cookies.chart_generations) {
-      document.cookie = `chart_generations=3;path=/;max-age=${60*60*24*7};samesite=lax`;
-    }
-
-
-    console.log(cookies);
-    setCookieCredits(cookies.chart_generations);
-  }, []);
+  // useEffect(() => {
+  //   console.log("session");
+  //   console.log(session);
+  //   if (!session) {
+  //     const interval = setInterval(async () => {
+  //       // const cookies = parse(document.cookie);
+  //       // if (!cookies.credits) {
+  //       //   document.cookie = `credits=3;path=/;max-age=${60*60*24*7};samesite=lax`;
+  //       // }
+  //       let getCredits = await getUserCredits(session);
+  //       //let { data } = await axios.get("/api/cookie");
+  //       //setCookieCredits(data?.credits || '0');
+  //       //console.log(cookies);
+  //       setCookieCredits(getCredits);
+  //     }, 1000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [session]);
 
   async function handleSignIn() {
     signIn("google");
@@ -170,7 +178,7 @@ export const SignIn = () => {
     return (
       <>
         <div className="flex space-x-4">
-        <div>
+        {/* <div>
             <button
               className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-sm text-gray-700 hover:bg-gray-50"
               // onClick={handleSignIn}
@@ -185,7 +193,7 @@ export const SignIn = () => {
             >
               {cookieCredits} Credits
             </button>
-          </div>
+          </div> */}
           <div>
             <button
               className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"

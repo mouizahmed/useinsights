@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { SectionHeader } from "../components/ui/SectionHeader";
+import { getUserCredits, decreaseUserCredits } from "../util/helper"
 import { useRouter } from "next/router";
 import Divider from "@mui/joy/Divider";
 import React, { useState, useEffect, useCallback, Fragment } from "react";
@@ -11,9 +12,11 @@ import {
   ChevronUpDownIcon,
   SparklesIcon,
 } from "@heroicons/react/20/solid";
+import LoginModal from "../components/ui/LoginModal"
 
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Tab, Disclosure, Listbox } from "@headlessui/react";
+import { useSession } from "next-auth/react";
 
 export default function SQLPrompt({
   sqlQuery,
@@ -39,16 +42,49 @@ export default function SQLPrompt({
   //const [checked, setChecked] = useState(false);
 
   const router = useRouter();
+  const { data: session, update } = useSession();
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [loginError, setLoginError] = useState<boolean>(false);
+
+
+
 
   const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
+
     try {
+      // const userCredits = parseInt(await getUserCredits(session));
+
+      // if (userCredits <= 0) throw Error("No credits available"); 
+  
+      // console.log("CREDITS")
+      // console.log(userCredits);
+
+      
+
+      // if (!session) {
+      //   let { data } = await axios.get("/api/cookie");
+      //   if (parseInt(data.credits) <= 0) throw Error("Not enough credits available");
+      // }
+
+      // let getCredits = parseInt(await getUserCredits(session));
+      // console.log("USER CREDITS!!!")
+      // console.log(getCredits);
+      //console.log(session.user?.email);
+        if (!session) {
+          setIsOpen(true);
+          setLoginError(true);
+          throw Error("No Session available");
+        }
+
       if (humanToSQL) {
         let getSQLQuery = await axios.post(
           "http://localhost:3000/api/get-sql-query",
           { userPrompt: inputPromptSQL }
         );
-        
+        // UPDATE COOKIE IN ABOVE API END POINT
+        await decreaseUserCredits(session.user?.email);
+        update()
         setSQLQuery(getSQLQuery.data);
         setSQLToHuman("");
       } else {
@@ -56,12 +92,14 @@ export default function SQLPrompt({
           "http://localhost:3000/api/sql-to-human",
           { userPrompt: inputPromptSQL }
         );
-        
+        // UPDATE COOKIE IN ABOVE API END POINT
+        await decreaseUserCredits(session.user?.email);
+        update()
         setSQLToHuman(getSQLToHuman.data);
         //setInputPromptSQL(sqlQuery);
         setSQLQuery("");
-        
       }
+
     } catch (err) {
       console.error(err);
     }
@@ -78,11 +116,13 @@ export default function SQLPrompt({
 
   return (
     <div>
+      {loginError ? (<LoginModal isOpen={isOpen} setIsOpen={setIsOpen} />) : null}
       <form
         id="sql-generation"
         onSubmit={handleSubmit}
         className="h-tabs grid grid-rows-3 grid-flow-row gap-4"
       >
+        
         <div className="row-span-3 space-y-4 p-1 overflow-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-rounded-lg scrollbar-track-gray-300">
           <Disclosure defaultOpen={true}>
             {({ open }) => (
@@ -91,7 +131,11 @@ export default function SQLPrompt({
                   <SectionHeader
                     stepNumber={1}
                     color={"red"}
-                    headerTitle={humanToSQL ? ("Natural Language to SQL Query") : ("SQL Query To Natural Language")}
+                    headerTitle={
+                      humanToSQL
+                        ? "Natural Language to SQL Query"
+                        : "SQL Query To Natural Language"
+                    }
                   />
                   <ChevronUpIcon
                     className={`${
@@ -103,14 +147,34 @@ export default function SQLPrompt({
                   <textarea
                     className="flex-1 resize-none w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:blue-purple-600 focus:border-transparent"
                     id="prompt-database"
-                    placeholder={humanToSQL ? ("Enter a prompt to generate a SQL query...") : ("Enter a SQL query to convert to human language...")}
+                    placeholder={
+                      humanToSQL
+                        ? "Enter a prompt to generate a SQL query..."
+                        : "Enter a SQL query to convert to human language..."
+                    }
                     required
                     autoFocus
                     rows={5}
                     value={inputPromptSQL}
                     onChange={handleInputChange}
                   ></textarea>
-                  <div className="flex justify-end items-center"><button type="button" className={classNames("border p-1 rounded-md hover:bg-gray-200", !humanToSQL ? ("border-red-500") : (""))} onClick={() => setHumanToSQL(!humanToSQL)}><ArrowPathIcon className={classNames("w-5 h-5", !humanToSQL ? ("text-red-500") : "")} /></button></div>
+                  <div className="flex justify-end items-center">
+                    <button
+                      type="button"
+                      className={classNames(
+                        "border p-1 rounded-md hover:bg-gray-200",
+                        !humanToSQL ? "border-red-500" : ""
+                      )}
+                      onClick={() => setHumanToSQL(!humanToSQL)}
+                    >
+                      <ArrowPathIcon
+                        className={classNames(
+                          "w-5 h-5",
+                          !humanToSQL ? "text-red-500" : ""
+                        )}
+                      />
+                    </button>
+                  </div>
                 </Disclosure.Panel>
               </>
             )}

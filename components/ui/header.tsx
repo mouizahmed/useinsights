@@ -8,7 +8,7 @@ export const Header = () => {
   const router = useRouter();
   useEffect(() => {
     const cookies = parse(document.cookie);
-    console.log(cookies);
+    //console.log(cookies);
     // if (!cookies.available_credits) {
     //     document.cookie = `chart_generations=3;path=/;max-age=${60*60*24*7};samesite=lax`;
     // }

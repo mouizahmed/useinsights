@@ -1,6 +1,6 @@
 import React, {  FC, PropsWithChildren } from 'react';
 import Head from 'next/head';
-import { Header } from '../ui/Header';
+import { Header } from '../ui/header';
 
 
 

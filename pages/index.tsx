@@ -21,7 +21,8 @@ import { useSession, signIn, signOut } from "next-auth/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
+  console.log(session);
   const router = useRouter();
 
   const [sqlQuery, setSQLQuery] = useState<string>("");
@@ -112,7 +113,8 @@ export default function Home() {
                 )
               }
             >
-              Image <span className="text-xs font-normal">(Coming Soon)</span>
+              Image 
+              {/* <span className="text-xs font-normal">(Coming Soon)</span> */}
             </Tab>
           </Tab.List>
           <Tab.Panels>
@@ -159,7 +161,7 @@ export default function Home() {
                 <div className="space-x-2">
                   <button
                     className="p-1 rounded-md border hover:bg-gray-200"
-                    onClick={() => copyText(sqlQuery)}
+                    onClick={() => copyText(sqlQuery || sqlToHuman)}
                   >
                     {!copySQL ? (
                       <ClipboardDocumentIcon className="w-5 h-5" />
