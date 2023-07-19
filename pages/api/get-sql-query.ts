@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             `Based on the prompt: '${userPrompt.trim()}', generate a sql query that achieves that action.`
         );
         console.log(response);
-     
+
 
         res.status(200).send(response.trim());
     } catch (err) {

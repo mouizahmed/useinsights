@@ -12,8 +12,7 @@ import {
   ChevronUpDownIcon,
   SparklesIcon,
 } from "@heroicons/react/20/solid";
-import LoginModal from "../components/ui/LoginModal"
-
+import Modal from "../components/ui/Modal";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Tab, Disclosure, Listbox } from "@headlessui/react";
 import { useSession } from "next-auth/react";
@@ -43,8 +42,8 @@ export default function SQLPrompt({
 
   const router = useRouter();
   const { data: session, update } = useSession();
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [loginError, setLoginError] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isNoCreditsOpen, setIsNoCreditsOpen] = useState<boolean>(false);
 
 
 
@@ -53,28 +52,15 @@ export default function SQLPrompt({
     event.preventDefault();
 
     try {
-      // const userCredits = parseInt(await getUserCredits(session));
-
-      // if (userCredits <= 0) throw Error("No credits available"); 
-  
-      // console.log("CREDITS")
-      // console.log(userCredits);
-
-      
-
-      // if (!session) {
-      //   let { data } = await axios.get("/api/cookie");
-      //   if (parseInt(data.credits) <= 0) throw Error("Not enough credits available");
-      // }
-
-      // let getCredits = parseInt(await getUserCredits(session));
-      // console.log("USER CREDITS!!!")
-      // console.log(getCredits);
-      //console.log(session.user?.email);
+   
         if (!session) {
           setIsOpen(true);
-          setLoginError(true);
           throw Error("No Session available");
+        } else {
+          if (!session.user.credits || session.user?.credits <= 0) {
+            setIsNoCreditsOpen(true);
+            throw Error("No credits available");
+          }
         }
 
       if (humanToSQL) {
@@ -116,7 +102,8 @@ export default function SQLPrompt({
 
   return (
     <div>
-      {loginError ? (<LoginModal isOpen={isOpen} setIsOpen={setIsOpen} />) : null}
+      {isOpen ? (<Modal isOpen={isOpen} setIsOpen={setIsOpen} type="login" />) : null}
+      {isNoCreditsOpen ? (<Modal isOpen={isNoCreditsOpen} setIsOpen={setIsNoCreditsOpen} type="no-credits"/>) : null}
       <form
         id="sql-generation"
         onSubmit={handleSubmit}
@@ -197,13 +184,7 @@ export default function SQLPrompt({
                 </Disclosure.Button>
                 <Disclosure.Panel className="text-gray-500 space-y-4">
                   <div>
-                    <label className="text-gray-700 text-sm">
-                      Host IP or URL
-                    </label>
-                    <input
-                      type="text"
-                      className="flex-1 resize-none w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:blue-purple-600 focus:border-transparent"
-                    />
+                    
                   </div>
 
                   <div>

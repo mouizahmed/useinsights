@@ -1,9 +1,12 @@
 import Image from "next/image";
 import TablePrompt from "../components/TablePrompt";
 import SQLPrompt from "../components/SQLPrompt";
+import Divider from "@mui/joy/Divider";
 import { Inter } from "next/font/google";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs, dracula } from "react-syntax-highlighter/dist/cjs/styles/hljs";
+import Chart from "../components/ui/Chart";
+import TableFromChart from "../components/ui/TableFromChart";
 import {
   ClipboardDocumentIcon,
   CheckIcon,
@@ -28,9 +31,11 @@ export default function Home() {
   const [sqlQuery, setSQLQuery] = useState<string>("");
   const [sqlToHuman, setSQLToHuman] = useState<string>("");
   const [copySQL, setCopySQL] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("");
-  const [humanToSQL, setHumanToSQL] = useState<boolean>(true); 
+  const [activeTab, setActiveTab] = useState<string>("Prompt");
+  const [humanToSQL, setHumanToSQL] = useState<boolean>(true);
+  const [chartData, setChartData] = useState<any[]>([]);
   const [inputPromptSQL, setInputPromptSQL] = useState<string>("");
+  const [chartRelatedQuestions, setChartRelatedQuestions] = useState<any[]>([]);
 
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
@@ -113,13 +118,18 @@ export default function Home() {
                 )
               }
             >
-              Image 
+              Image
               {/* <span className="text-xs font-normal">(Coming Soon)</span> */}
             </Tab>
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel className="mt-4 focus:outline-none">
-              <TablePrompt />
+              <TablePrompt
+                chartData={chartData}
+                setChartData={setChartData}
+                chartRelatedQuestions={chartRelatedQuestions}
+                setChartRelatedQuestions={setChartRelatedQuestions}
+              />
             </Tab.Panel>
             <Tab.Panel className="mt-4 focus:outline-none">
               <SQLPrompt
@@ -139,10 +149,41 @@ export default function Home() {
       </div>
 
       <div
-        className=" bg-zinc-100 rounded-xl h-calc-mobile md:h-calc md:col-span-2 heropattern-plus-zinc-500 p-4"
+        className=" bg-zinc-100 rounded-xl h-calc-mobile md:h-calc md:col-span-2 heropattern-plus-zinc-500 p-4 overflow-y-auto"
         id="graph-box"
       >
-        {activeTab === "Prompt" ? null : activeTab === "Database" ? (
+        {activeTab === "Prompt" ? (
+          <div className="grid xs:grid-cols-1 md:grid-cols-2 gap-4 h-calc-mobile md:h-calc">
+            {chartData.length > 0 ? (
+              <div className="z-10 bg-white rounded-lg shadow-md p-4">
+                <Chart data={chartData} chartType="line" />
+              </div>
+            ) : null}
+
+            {chartRelatedQuestions.length > 0 ? (
+              <div className="z-10 bg-white rounded-lg shadow-md p-4">
+                {chartRelatedQuestions.map((chartRelatedQuestion, i) => (
+                  <div key={i} className="grid grid-cols-3">
+                    <div className="col-span-2 m-2">
+                      <h1 className="font-medium">
+                        {chartRelatedQuestion.question}
+                      </h1>
+                    </div>
+                    <div className="flex justify-center items-center">
+                      <button className="border p-2 rounded-lg w-full hover:bg-blue-100 border-blue-300">
+                        Ask
+                      </button>
+                    </div>
+                    {/* <Divider className="col-span-3 mt-1 mb-1"/> */}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {chartData.length > 0 ? (<div className="z-10 bg-white rounded-lg shadow-md p-4">
+                <TableFromChart data={chartData} />
+            </div>) : null}
+          </div>
+        ) : activeTab === "Database" ? (
           <div>
             {sqlQuery || sqlToHuman ? (
               <div className="bg-white rounded-lg p-4 z-10 shadow-md space-y-4">
