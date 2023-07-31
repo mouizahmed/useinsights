@@ -1,12 +1,13 @@
 import Image from "next/image";
-import { SectionHeader } from "../components/ui/SectionHeader";
+import { SectionHeader } from "../ui/SectionHeader";
 import { useRouter } from "next/router";
 import Divider from "@mui/joy/Divider";
 import React, { useState, useEffect, useCallback, Fragment } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import Modal from "../components/ui/Modal";
-import { getUserCredits, decreaseUserCredits } from "../util/helper"
+import Modal from "../ui/Modal";
+import { getUserCredits, decreaseUserCredits } from "../../util/helper"
+import { ChartType } from '../../types';
 import {
   ChevronUpIcon,
   CheckIcon,
@@ -14,17 +15,26 @@ import {
   SparklesIcon,
 } from "@heroicons/react/20/solid";
 import { Menu, Transition, Tab, Disclosure, Listbox } from "@headlessui/react";
+import FileUpload from "./FileUpload";
 
 export default function TablePrompt({
   chartData,
   setChartData,
   chartRelatedQuestions,
   setChartRelatedQuestions,
+  chartType,
+  setChartType,
+  loading,
+  setLoading,
 } : {
   chartData: any[];
   setChartData: React.Dispatch<React.SetStateAction<any[]>>;
   chartRelatedQuestions: any[]
   setChartRelatedQuestions: React.Dispatch<React.SetStateAction<any[]>>;
+  chartType: ChartType
+  setChartType: React.Dispatch<React.SetStateAction<ChartType>>;
+  loading: boolean
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [inputPrompt, setInputPrompt] = useState("");
   //const [checked, setChecked] = useState(false);
@@ -38,11 +48,10 @@ export default function TablePrompt({
     { title: "Pie Chart", chartType: "pie" },
     { title: "Scatter Chart", chartType: "scatter" },
   ];
-  const [selected, setSelected] = useState(charts[0]);
   const [selectedError, setSelectedError] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isNoCreditsOpen, setIsNoCreditsOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   const { data: session, update } = useSession();
  
 
@@ -72,17 +81,17 @@ export default function TablePrompt({
 
       let getGraphType = await axios.post(
         "http://localhost:3000/api/get-graph-type",
-        { userPrompt: inputPrompt }
+        { userPrompt: inputPrompt, type: chartType }
       );
       console.log(getGraphType?.data.toLowerCase());
-      setSelected({
+      setChartType({
         title: `${getGraphType?.data} Chart`,
         chartType: getGraphType?.data,
       });
 
       console.log(charts[Math.floor(Math.random() * charts.length)]);
       if (getGraphType?.data.toLowerCase() === "random")
-        setSelected(charts[Math.floor(Math.random() * charts.length)]);
+        setChartType(charts[Math.floor(Math.random() * charts.length)]);
       if (getGraphType?.data.toLowerCase() === "not valid") {
           setSelectedError(true);
           throw Error("Invalid chart type");
@@ -93,7 +102,7 @@ export default function TablePrompt({
 
         let getGraphJSON = await axios.post(
           "http://localhost:3000/api/get-graph-json",
-          { userPrompt: inputPrompt.trim(), chartType: selected.chartType }
+          { userPrompt: inputPrompt.trim(), chartType: chartType.chartType }
         );
 
         
@@ -172,9 +181,9 @@ export default function TablePrompt({
                   ></textarea>
                   <label className="text-gray-700 text-sm">Chart Type:</label>
                   <Listbox
-                    value={selected}
+                    value={chartType}
                     onChange={(chartType) => {
-                      setSelected(chartType);
+                      setChartType(chartType);
                       handleChartTypeChange(chartType.chartType);
                     }}
                   >
@@ -186,7 +195,7 @@ export default function TablePrompt({
                             : "relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left border border-red-300 focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-300 sm:text-sm"
                         }
                       >
-                        <span className="block truncate">{selected.title}</span>
+                        <span className="block truncate">{chartType.title}</span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                           <ChevronUpDownIcon
                             className="h-5 w-5 text-gray-400"
@@ -216,14 +225,14 @@ export default function TablePrompt({
                               <>
                                 <span
                                   className={`block truncate ${
-                                    selected.title === chart.title
+                                    chartType.title === chart.title
                                       ? "font-medium"
                                       : "font-normal"
                                   }`}
                                 >
                                   {chart.title}
                                 </span>
-                                {selected?.title === chart.title ? (
+                                {chartType?.title === chart.title ? (
                                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">
                                     <CheckIcon
                                       className="h-5 w-5"
@@ -259,7 +268,7 @@ export default function TablePrompt({
                   />
                 </Disclosure.Button>
                 <Disclosure.Panel className="text-gray-500">
-                  Yes
+                  <FileUpload />
                 </Disclosure.Panel>
               </>
             )}

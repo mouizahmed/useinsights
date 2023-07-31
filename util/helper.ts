@@ -6,33 +6,19 @@ import { Session } from 'next-auth';
 export async function decreaseUserCredits(email: string | null) {
     //const email = session.user?.email;
     const { data, error } = await supabase
-    .rpc('decrementcredits', { email });
+        .rpc('decrementcredits', { email });
 
-if (error) {
-    throw new Error("Error updating user credits");
+    if (error) {
+        throw new Error("Error updating user credits");
+    }
+
 }
-    
 
-    // const cookies = parse(document.cookie);
-    // if (!cookies.credits) {
-    //     document.cookie = `credits=5;path=/;max-age=${60};samesite=lax`;
+export function hideKey(text: string, initial: number): string {
+    const remainingLength = text.length - initial;
+    const hiddenPart = "*".repeat(remainingLength);
 
-    //     const cookieValue = serialize("session", "5", {
-    //         httpOnly: true,
-    //         secure: process.env.NODE_ENV === "production",
-    //         maxAge: 60 * 60 * 24 * 7, // 1 week
-    //         sameSite: "strict",
-    //         path: "/",
-    //       });
-    //       `res.setHeader("Set-Cookie", cookieValue);`
-    // }
-
-    // if (!session) {
-    //     document.cookie = `credits=${parseInt(cookies.credits)-1};path=/;max-age=${60*60*24*7};samesite=lax`;
-    // } else {
-    //     return "0";
-    // }
-
+    return text.substring(0, initial) + hiddenPart;
 }
 
 export async function addUserCredits() {

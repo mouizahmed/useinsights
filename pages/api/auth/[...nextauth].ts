@@ -3,7 +3,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { supabase } from '../../../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = ({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? '',
@@ -71,27 +71,46 @@ export default NextAuth({
       let { user } = session;
       //console.log(session);
 
-      let { data, error } = await
+      let { data: user_info, error: user_error } = await
         supabase
           .from('Users')
           .select()
           .eq('email', user?.email);
+        
+       
 
       //console.log(data);
 
-      if (data && data.length > 0) {
+
+
+      // let { data: Secret_Keys, error: api_error } = await supabase
+      //   .from('Secret_Keys')
+      //   .select()
+      //   .eq('created_by', user?.email);
+
+      //   const user_keys = { api_keys: Secret_Keys}
+
+      if (user_info && user_info.length > 0) {
         session.user = {
           ...user,
-          ...data[0],
+          ...user_info[0],
+          // ...user_keys
         };
       }
 
       //console.log(session);
       //console.log(user);
       return session;
-    }
+    },
+    async redirect({ url, baseUrl }) {
+      if (url === baseUrl) return `${baseUrl}/app`
+
+      return baseUrl
+    },
   },
 
   secret: process.env.JWT_TOKEN,
 
 })
+
+export default NextAuth(authOptions);

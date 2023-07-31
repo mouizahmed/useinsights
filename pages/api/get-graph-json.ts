@@ -12,7 +12,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const response = await model.call(
 
             `Based on '${userPrompt}' generate a valid JSON in which each element is an object for Recharts API for chart '${chartType}' without new line characters '\n'. Strictly using this FORMAT and naming:
-[{ "name": "a", "value1": 12, "value2": 12 }]. Make sure field name always stays named name. Instead of naming value field value in JSON, name it based on user metric and make it the same across every item. You can add more values (values3, values4, and so on if necessary). \n Provide JSON data only. Do not finish until you get all the valid data.`
+[{ "name": "a", "value1": 12, "value2": 12 }]. Make sure field name always stays named name. Instead of naming value field value in JSON, name it based on user metric and make it the same across every item. You can add more values (values3, values4, and so on if necessary). \n Provide JSON data only. Do not finish until you get all the valid data.`, {
+    callbacks: [
+        {
+            handleLLMNewToken(token: string) {
+                console.log({ token });
+            }
+        }
+    ]
+}
         );
         console.log(response);
 

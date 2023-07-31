@@ -21,11 +21,11 @@ export const Header = () => {
   };
 
   return (
-    <nav className="w-full flex items-center justify-between h-12 px-4 border-2 border-zinc-200 row-span-3">
+    <nav className="sticky top-0 z-10 bg-white w-full flex items-center justify-between h-12 px-4 row-span-3 rounded-lg">
       <div
         className="flex items-center space-x-2 cursor-pointer"
         onClick={handleClick}
-      > 
+      >
         <div className="border rounded-md p-1 hover:bg-slate-50">
           <EyeIcon className="w-5 h-5" />
         </div>
