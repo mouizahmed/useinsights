@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase-client';
 // import { parse, serialize } from "cookie";
 import { Session } from 'next-auth';
 // import { useSession, signIn, signOut } from "next-auth/react";

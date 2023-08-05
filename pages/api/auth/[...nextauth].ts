@@ -1,7 +1,8 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, User } from "next-auth";
 import GoogleProvider from 'next-auth/providers/google';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabase-client';
 import { v4 as uuidv4 } from 'uuid';
+import { createAccount, updateAccount } from "../../../lib/supabase-admin";
 
 export const authOptions: NextAuthOptions = ({
   providers: [
@@ -27,28 +28,13 @@ export const authOptions: NextAuthOptions = ({
 
       // user does not exist in database
       if (ExistingUser.length === 0) {
-        const { data: newUser, error: newUserError } = await supabase
-          .from('Users')
-          .insert([
-            {
-              id: uuidv4(),
-              email: user.email,
-              name: user.name,
-              image: user.image
-            }
-          ])
+        await createAccount(user);
+
       } else {
         // update name and/or profile picture
         if (ExistingUser[0].name !== user.name || ExistingUser[0].image !== user.image) {
-          const { data, error } = await supabase
-            .from('Users')
-            .update({ name: user.name, image: user.image })
-            .eq('id', ExistingUser[0].id)
 
-          if (error) {
-            console.log(error);
-            return false;
-          }
+          await updateAccount(user, ExistingUser[0].id);
         }
 
         // // update profile picture
@@ -76,8 +62,8 @@ export const authOptions: NextAuthOptions = ({
           .from('Users')
           .select()
           .eq('email', user?.email);
-        
-       
+
+
 
       //console.log(data);
 

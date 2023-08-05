@@ -4,7 +4,7 @@ import { TrashIcon, EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { useSession, getSession } from "next-auth/react";
 import { hideKey } from "../../util/helper";
 import axios from "axios";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../lib/supabase-client";
 import { NotificationVariantType } from "@/types";
 export function OpenAIKey({
   setShow,
@@ -82,15 +82,15 @@ export function OpenAIKey({
           },
         }
       );
-
-      const { data, error } = await supabase
-        .from("Users")
-        .update({ openAI: openAI })
-        .match({ id: session?.user.id })
-        .select();
+      
+      await axios.put('/api/account/set-openai-key', {
+        openAI: openAI,
+        userID: session?.user.id
+      });
       // const hiddenKey = hideKey(openAI, 8)
       // setOpenAI(hiddenKey);
       // setHiddenOpenAI(hiddenKey);
+      
       update();
       setShow(true);
       setKeep(false);

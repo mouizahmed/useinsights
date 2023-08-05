@@ -1,43 +1,82 @@
 import { useSession, getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabase";
-import { API } from "../../types";
+import { supabase } from "../../lib/supabase-client";
+import { API, NotificationVariantType } from "../../types";
 import { APIKeysRow } from "./APIKeyRow";
+import axios from "axios";
 
-export function APIKeysTable() {
+export function APIKeysTable({
+  setShow,
+  setTitle,
+  setDescription,
+  setVariant,
+}: {
+  setShow: React.Dispatch<React.SetStateAction<boolean>>;
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  setDescription: React.Dispatch<React.SetStateAction<string>>;
+  setVariant: React.Dispatch<React.SetStateAction<NotificationVariantType>>;
+}) {
   const { data: session, update } = useSession();
 
   const [secretKeys, setSecretKeys] = useState<API[]>([]);
-  const people = [
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    // More people...
-  ];
+
+  const deleteKey = async (api_key: string) => {
+    try {
+      await axios.delete(
+        `/api/account/delete-secret-key?api_key=${api_key}`
+      );
+
+      setSecretKeys(secretKeys.filter((key) => key.secret_key !== api_key));
+
+      setShow(true);
+      setTitle("Success!");
+      setDescription("Your secret key has been deleted.");
+      setVariant("success");
+    } catch (err) {
+      setShow(true);
+      setTitle("Error!");
+      setDescription((err as Error).message);
+      setVariant("error");
+    }
+  };
 
   useEffect(() => {
     const getKeys = async () => {
-      let { data: Secret_Keys, error: api_error } = await supabase
-        .from("Secret_Keys")
-        .select()
-        .eq("created_by", session?.user.email);
+      try {
+        const { data: Secret_Keys } = await axios.get(
+          `/api/account/get-secret-keys?email=${session?.user.email}`
+        );
 
-      if (Secret_Keys) setSecretKeys(Secret_Keys);
+        if (Secret_Keys) setSecretKeys(Secret_Keys);
+      } catch (err) {
+        setShow(true);
+        setTitle("Error!");
+        setDescription("There was an error retrieving your secret keys.");
+        setVariant("error");
+      }
     };
 
     getKeys();
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, secretKeys]);
 
   const addKey = async () => {
-    const { data, error } = await supabase
-      .from("Secret_Keys")
-      .insert([{ created_by: session?.user.email }])
-      .select();
-
-      console.log(data);
+    try {
+      const response = await axios.post(
+        `/api/account/create-secret-key`, {
+          email: session?.user.email
+        }
+      );
+      setShow(true);
+      setTitle("Success!");
+      setDescription("Successfully added a new secret key.");
+      setVariant("success");
+    } catch (err) {
+      setShow(true);
+      setTitle("Error!");
+      setDescription("Could not create a new secret key.");
+      setVariant("error");
+    }
   };
 
   return (
@@ -97,6 +136,7 @@ export function APIKeysTable() {
                         secretKeys={secretKeys}
                         setSecretKeys={setSecretKeys}
                         created_at={api.created_at}
+                        deleteKey={deleteKey}
                       />
                     ))}
                   </tbody>

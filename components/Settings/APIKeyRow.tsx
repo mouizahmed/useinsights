@@ -7,7 +7,7 @@ import {
   CheckIcon,
 } from "@heroicons/react/24/outline";
 import { hideKey } from "../../util/helper";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../lib/supabase-client";
 import { useState } from "react";
 
 export function APIKeysRow({
@@ -15,11 +15,13 @@ export function APIKeysRow({
   setSecretKeys,
   secretKeys,
   created_at,
+  deleteKey,
 }: {
   api_key: string | null;
   setSecretKeys: React.Dispatch<React.SetStateAction<API[]>>;
   secretKeys: API[];
   created_at: string | null;
+  deleteKey: (api_key: string) => Promise<void>;
 }) {
   const [shown, setShown] = useState<boolean>(false);
   const [copied, setCopied] = useState(false);
@@ -32,14 +34,7 @@ export function APIKeysRow({
     }, 1000);
   };
 
-  const deleteKey = async () => {
-    const { error } = await supabase
-      .from("Secret_Keys")
-      .delete()
-      .eq("secret_key", api_key);
 
-      setSecretKeys(secretKeys.filter((key) => key.secret_key !== api_key))
-  };
 
   return (
     <>
@@ -80,7 +75,7 @@ export function APIKeysRow({
         <td className="p-4">
           <button
             className="flex items-center justify-center p-2 hover:bg-red-200 rounded-lg disabled:opacity-50"
-            onClick={() => deleteKey()}
+            onClick={() => deleteKey(api_key ?? "")}
           >
             <TrashIcon className="w-5 h-5 text-red-600" />
           </button>
