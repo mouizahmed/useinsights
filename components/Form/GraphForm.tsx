@@ -16,6 +16,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Menu, Transition, Tab, Disclosure, Listbox } from "@headlessui/react";
 import FileUpload from "./FileUpload";
+import ComponentSelector from "./ComponentSelector";
 
 export default function TablePrompt({
   chartData,
@@ -324,37 +325,7 @@ export default function TablePrompt({
                   />
                 </Disclosure.Button>
                 <Disclosure.Panel className="text-gray-500">
-                  <div className="flex space-x-4">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="analytics"
-                        name="analyticsCheckBox"
-                        value="Bike"
-                      />
-                      <label
-                        htmlFor="analyticsCheckBox"
-                        className="ml-1 text-gray-700 text-sm"
-                      >
-                        Advanced Analytics
-                      </label>
-                    </div>
-
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="table"
-                        name="tableCheckBox"
-                        value="Bike"
-                      />
-                      <label
-                        htmlFor="tableCheckBox"
-                        className="ml-1 text-gray-700 text-sm"
-                      >
-                        Show Table
-                      </label>
-                    </div>
-                  </div>
+                  <ComponentSelector />
                 </Disclosure.Panel>
               </>
             )}

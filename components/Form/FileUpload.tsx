@@ -3,22 +3,32 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import React, { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { useCSVReader } from "react-papaparse";
+import axios from "axios";
 
 export default function FileUpload() {
   const [dropZoneAttachedFiles, setDropZoneAttachedFiles] = useState<File[]>(
     []
   );
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles?.length) {
-      console.log(acceptedFiles);
-      setDropZoneAttachedFiles([...dropZoneAttachedFiles, ...acceptedFiles])
-    }
-  }, [dropZoneAttachedFiles]);
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (acceptedFiles?.length) {
+        console.log(acceptedFiles);
+        const form = new FormData();
+        form.append("media", acceptedFiles[0]);
+        const { data: fileObjects } = await axios.post(
+          `/api/file-uploader`,
+          form
+        );
+        setDropZoneAttachedFiles([...dropZoneAttachedFiles, ...acceptedFiles]);
+      }
+    },
+    [dropZoneAttachedFiles]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
-      "text/html": [".pdf", ".doc", ".docx", ".txt", ".csv", ".xlsx"],
+      "text/html": [".csv"],
     },
     onDrop,
     validator: (file) => {
@@ -76,44 +86,38 @@ export default function FileUpload() {
         </div>
       </section>
       <section id="attached-file-list" className="">
-            {dropZoneAttachedFiles.map((file, i) => (
-                <AttachedFileItem 
-                    key={i}
-                    attachedFile={file}
-                    index={i}
-                />
-            )
-            )}
+        {dropZoneAttachedFiles.map((file, i) => (
+          <AttachedFileItem key={i} attachedFile={file} index={i} />
+        ))}
       </section>
     </div>
   );
 }
 
-
 const AttachedFileItem = ({
-    attachedFile,
-    // removeAttachedFile,
-    index
-  }: {
-    attachedFile: File;
-    // removeAttachedFile: (index: number, fileName: string) => void;
-    index: number;
-  }) => {
-    return (
-      <div className="grid grid-cols-10 p-2 m-2 border rounded-lg">
-        <div className="col-span-9">
-          <span className="break-words">{attachedFile?.name}</span>{' '}
-          {/* <span className="text-zinc-500 text-sm">
+  attachedFile,
+  // removeAttachedFile,
+  index,
+}: {
+  attachedFile: File;
+  // removeAttachedFile: (index: number, fileName: string) => void;
+  index: number;
+}) => {
+  return (
+    <div className="grid grid-cols-10 p-2 m-2 border rounded-lg">
+      <div className="col-span-9">
+        <span className="break-words">{attachedFile?.name}</span>{" "}
+        {/* <span className="text-zinc-500 text-sm">
             ({numberWithCommas(attachedFile?.characters)} chars)
           </span> */}
-        </div>
-        <div className="flex items-center justify-end">
-          <button
-            // onClick={() => removeAttachedFile(index, attachedFile.name)}
-          >
-            <TrashIcon className="w-4 h-4 text-red-600 ml-1" />
-          </button>
-        </div>
       </div>
-    );
-  };
+      <div className="flex items-center justify-end">
+        <button
+        // onClick={() => removeAttachedFile(index, attachedFile.name)}
+        >
+          <TrashIcon className="w-4 h-4 text-red-600 ml-1" />
+        </button>
+      </div>
+    </div>
+  );
+};
