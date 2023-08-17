@@ -7,7 +7,7 @@ declare module "next-auth" {
     created_at: string | null;
     openAI: string | null;
     // api_keys: API[] | [];
-    credits: number | null;
+    credits: number | 0;
     email: string | null;
     id: string | null;
     image: string | null;

@@ -93,3 +93,7 @@ export async function setOpenAI(openAI: string, userID: string) {
     console.log(data);
 }
 
+export async function createOrRetrieveCustomer(userID: string) {
+    
+}
+

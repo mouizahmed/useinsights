@@ -80,7 +80,7 @@ export default function SQLPrompt({
       if (humanToSQL) {
         if (enableDatabase) {
           let sqlQueryDatabase = await axios.post(
-            "http://localhost:3000/api/database-query",
+            "/api/database-query",
             { credentials: credentials, prompt: inputPromptSQL, limit: (limit === "" ? ("Unlimited") : limit)  }
           );
           setSQLQuery(sqlQueryDatabase.data.sql);
@@ -90,7 +90,7 @@ export default function SQLPrompt({
           console.log(sqlQueryDatabase);
         } else {
           let getSQLQuery = await axios.post(
-            "http://localhost:3000/api/get-sql-query",
+            "/api/get-sql-query",
             { userPrompt: inputPromptSQL }
           );
           setSQLQuery(getSQLQuery.data);
@@ -102,7 +102,7 @@ export default function SQLPrompt({
         setSQLToHuman("");
       } else {
         let getSQLToHuman = await axios.post(
-          "http://localhost:3000/api/sql-to-human",
+          "/api/sql-to-human",
           { userPrompt: inputPromptSQL }
         );
         // UPDATE COOKIE IN ABOVE API END POINT
@@ -122,7 +122,7 @@ export default function SQLPrompt({
   const testDatabaseConnection = async () => {
     try {
       let establishConnection = await axios.post(
-        "http://localhost:3000/api/test-database",
+        "/api/test-database",
         { credentials: credentials }
       );
 

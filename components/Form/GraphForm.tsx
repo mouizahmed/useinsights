@@ -6,8 +6,9 @@ import React, { useState, useEffect, useCallback, Fragment } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import Modal from "../ui/Modal";
-import { getUserCredits, decreaseUserCredits } from "../../util/helper"
-import { ChartType } from '../../types';
+import { getUserCredits, decreaseUserCredits } from "../../util/helper";
+import ComponentSelector from "./ComponentSelector";
+import { ChartType } from "../../types";
 import {
   ChevronUpIcon,
   CheckIcon,
@@ -26,14 +27,14 @@ export default function TablePrompt({
   setChartType,
   loading,
   setLoading,
-} : {
+}: {
   chartData: any[];
   setChartData: React.Dispatch<React.SetStateAction<any[]>>;
-  chartRelatedQuestions: any[]
+  chartRelatedQuestions: any[];
   setChartRelatedQuestions: React.Dispatch<React.SetStateAction<any[]>>;
-  chartType: ChartType
+  chartType: ChartType;
   setChartType: React.Dispatch<React.SetStateAction<ChartType>>;
-  loading: boolean
+  loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [inputPrompt, setInputPrompt] = useState("");
@@ -53,10 +54,8 @@ export default function TablePrompt({
   const [isNoCreditsOpen, setIsNoCreditsOpen] = useState<boolean>(false);
   // const [loading, setLoading] = useState<boolean>(false);
   const { data: session, update } = useSession();
- 
 
   const handleChartTypeChange = (chartType: string) => {
-    
     if (chartType === "Not Valid") {
       setSelectedError(true);
     } else {
@@ -79,10 +78,10 @@ export default function TablePrompt({
         }
       }
 
-      let getGraphType = await axios.post(
-        "http://localhost:3000/api/get-graph-type",
-        { userPrompt: inputPrompt, type: chartType }
-      );
+      let getGraphType = await axios.post("/api/get-graph-type", {
+        userPrompt: inputPrompt,
+        type: chartType,
+      });
       console.log(getGraphType?.data.toLowerCase());
       setChartType({
         title: `${getGraphType?.data} Chart`,
@@ -93,30 +92,26 @@ export default function TablePrompt({
       if (getGraphType?.data.toLowerCase() === "random")
         setChartType(charts[Math.floor(Math.random() * charts.length)]);
       if (getGraphType?.data.toLowerCase() === "not valid") {
-          setSelectedError(true);
-          throw Error("Invalid chart type");
+        setSelectedError(true);
+        throw Error("Invalid chart type");
       }
-       
-      
 
+      let getGraphJSON = await axios.post("/api/get-graph-json", {
+        userPrompt: inputPrompt.trim(),
+        chartType: chartType.chartType,
+      });
 
-        let getGraphJSON = await axios.post(
-          "http://localhost:3000/api/get-graph-json",
-          { userPrompt: inputPrompt.trim(), chartType: chartType.chartType }
-        );
+      let getRelatedQuestionsJSON = await axios.post(
+        "/api/get-related-questions",
+        { chartData: getGraphJSON.data, chartPrompt: inputPrompt.trim() }
+      );
+      console.log(getRelatedQuestionsJSON.data);
+      setChartRelatedQuestions(getRelatedQuestionsJSON.data);
 
-        
-        let getRelatedQuestionsJSON = await axios.post("http://localhost:3000/api/get-related-questions", { chartData: getGraphJSON.data, chartPrompt: inputPrompt.trim() });
-        console.log(getRelatedQuestionsJSON.data);
-        setChartRelatedQuestions(getRelatedQuestionsJSON.data);
-
-        console.log(getGraphJSON);
-        setChartData(getGraphJSON.data);
-        await decreaseUserCredits(session.user?.email);
-        update();
-          
-      
-
+      console.log(getGraphJSON);
+      setChartData(getGraphJSON.data);
+      await decreaseUserCredits(session.user?.email);
+      update();
 
       setLoading(false);
     } catch (err) {
@@ -137,8 +132,9 @@ export default function TablePrompt({
 
   return (
     <div>
-      
-      {isOpen ? <Modal isOpen={isOpen} setIsOpen={setIsOpen} type="login" /> : null}
+      {isOpen ? (
+        <Modal isOpen={isOpen} setIsOpen={setIsOpen} type="login" />
+      ) : null}
       {isNoCreditsOpen ? (
         <Modal
           isOpen={isNoCreditsOpen}
@@ -151,7 +147,6 @@ export default function TablePrompt({
         onSubmit={handleSubmit}
         className="h-tabs grid grid-rows-3 grid-flow-row gap-4"
       >
-        
         <div className="row-span-3 space-y-4 p-1 overflow-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-rounded-lg scrollbar-track-gray-300">
           <Disclosure defaultOpen={true}>
             {({ open }) => (
@@ -195,7 +190,9 @@ export default function TablePrompt({
                             : "relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left border border-red-300 focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-300 sm:text-sm"
                         }
                       >
-                        <span className="block truncate">{chartType.title}</span>
+                        <span className="block truncate">
+                          {chartType.title}
+                        </span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                           <ChevronUpDownIcon
                             className="h-5 w-5 text-gray-400"
@@ -324,37 +321,7 @@ export default function TablePrompt({
                   />
                 </Disclosure.Button>
                 <Disclosure.Panel className="text-gray-500">
-                  <div className="flex space-x-4">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="analytics"
-                        name="analyticsCheckBox"
-                        value="Bike"
-                      />
-                      <label
-                        htmlFor="analyticsCheckBox"
-                        className="ml-1 text-gray-700 text-sm"
-                      >
-                        Advanced Analytics
-                      </label>
-                    </div>
-
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="table"
-                        name="tableCheckBox"
-                        value="Bike"
-                      />
-                      <label
-                        htmlFor="tableCheckBox"
-                        className="ml-1 text-gray-700 text-sm"
-                      >
-                        Show Table
-                      </label>
-                    </div>
-                  </div>
+                  <ComponentSelector />
                 </Disclosure.Panel>
               </>
             )}
@@ -365,7 +332,13 @@ export default function TablePrompt({
           disabled={loading}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full row-span-1 flex items-center justify-center space-x-4"
         >
-          {!loading ? ( <div className="flex"><SparklesIcon className="h-5 w-5" /> Generate </div>) : (<div>Loading...</div>)}
+          {!loading ? (
+            <div className="flex">
+              <SparklesIcon className="h-5 w-5" /> Generate{" "}
+            </div>
+          ) : (
+            <div>Loading...</div>
+          )}
         </button>
       </form>
     </div>

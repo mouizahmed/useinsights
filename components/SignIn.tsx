@@ -33,12 +33,13 @@ export const SignIn = () => {
             </button>
           </div>
           <div className="">
+            <Link href="/credits">
             <button
               className="flex justify-center items-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-sm text-gray-700 hover:bg-gray-50"
-              // onClick={handleSignIn}
             >
               {session.user?.credits} Credits
             </button>
+            </Link>
           </div>
           <Menu as="div" className="z-10 relative inline-block text-left">
             <div>
