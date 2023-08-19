@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
-import { addSecretKey } from "@/lib/supabase-admin";
+import { createOrRetrieveCustomer, createCheckoutSession } from "@/lib/supabase-admin";
 
 
 
@@ -16,11 +16,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         if (!session) throw Error("No session found.");
         
-        
+        let { quantity } = req.body;
+
+        if (!quantity) quantity = 1;
 
 
-        res.status(200).send("Successfully added secret key.");
+        const customerID = await createOrRetrieveCustomer(session.user);
+        const checkout = await createCheckoutSession(customerID, quantity);
+        console.log(checkout);
+        res.status(200).json({ url: checkout });
     } catch (err) {
+        console.log('err', err);
         res.status(500).json({ error: (err as Error).message});
     }
 

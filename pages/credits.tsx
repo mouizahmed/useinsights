@@ -3,10 +3,22 @@ import React, { useState, useEffect } from "react";
 import SliderComponent from "../components/ui/slider";
 import { GetServerSidePropsContext } from "next";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
 
 export default function Credits() {
   const { data: session, update } = useSession();
   const [credits, setCredits] = useState<number[]>([10]);
+
+  const createCheckoutSession = async () => {
+    console.log(session?.user.id);
+    const { data } = await axios.post('/api/create-checkout-session', {
+      quantity: credits[0] / 10
+    });
+
+    window.location.href = data.url;
+  }
+
+
   return (
     <div className="flex flex-col items-center justify-center max-w-7xl mx-auto my-10 p-4">
       <h2 className="text-center text-5xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
@@ -22,7 +34,7 @@ export default function Credits() {
         purchase the number of chart generations you need.
       </p>
       <SliderComponent credits={credits} setCredits={setCredits} />
-      <button className="p-4 rounded-lg border bg-black text-white shadow-md mt-4">
+      <button onClick={createCheckoutSession} className="p-4 rounded-lg border bg-black text-white shadow-md mt-4">
         Purchase credits
       </button>
       <div className="border p-4 rounded-lg shadow-md mt-16 flex flex-col items-center justify-center">
